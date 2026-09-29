@@ -4,13 +4,13 @@
   "version": "${version}",
 
   "name": "${name}",
-  "description": "Template for my fabric mods",
+  "description": "A next-generation scoreboard mod",
   "authors": [
-    "Fallen_Breath"
+    "late-maple"
   ],
   "contact": {
-    "homepage": "https://modrinth.com",
-    "sources": "https://github.com/Fallen-Breath/fabric-mod-template"
+    "homepage": "https://github.com/late-maple/Scoreboard-Next",
+    "sources": "https://github.com/late-maple/Scoreboard-Next"
   },
   "license": "LGPL-3.0",
 
@@ -19,11 +19,11 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "me.fallenbreath.template_mod.TemplateMod"
+      "top.sctserver.scoreboard_next.ScoreboardNext"
     ]
   },
   "mixins": [
-    "template_mod.mixins.json"
+    "scoreboard_next.mixins.json"
   ],
 
   "depends": {
