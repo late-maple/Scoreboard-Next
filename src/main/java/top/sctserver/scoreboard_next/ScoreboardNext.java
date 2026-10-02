@@ -22,9 +22,13 @@ package top.sctserver.scoreboard_next;
 
 import com.mojang.logging.LogUtils;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.metadata.ModMetadata;
 import org.slf4j.Logger;
+import top.sctserver.scoreboard_next.objective.Objectives;
+import top.sctserver.scoreboard_next.objective.ScoreboardManager;
+import top.sctserver.scoreboard_next.tracker.Trackers;
 
 public class ScoreboardNext implements ModInitializer
 {
@@ -34,6 +38,19 @@ public class ScoreboardNext implements ModInitializer
 	public static String MOD_VERSION = "unknown";
 	public static String MOD_NAME = "unknown";
 
+	private static ScoreboardManager scoreboardManager;
+
+
+	public static ScoreboardManager scoreboardManager()
+	{
+		ScoreboardManager manager = scoreboardManager;
+		if (manager == null)
+		{
+			throw new IllegalStateException("ScoreboardManager is only available while a server is running");
+		}
+		return manager;
+	}
+
 	@Override
 	public void onInitialize()
 	{
@@ -41,5 +58,25 @@ public class ScoreboardNext implements ModInitializer
 		MOD_NAME = metadata.getName();
 		MOD_VERSION = metadata.getVersion().getFriendlyString();
 		LOGGER.info("{} initialized, version {}", MOD_NAME, MOD_VERSION);
+
+		Trackers.registerAll();
+
+		ServerLifecycleEvents.SERVER_STARTING.register(server ->
+		{
+			ScoreboardManager manager = new ScoreboardManager(server);
+			Objectives.all().forEach(manager::register);
+			scoreboardManager = manager;
+			LOGGER.info("{} manager bound to server ({} objectives registered)", MOD_NAME, Objectives.all().size());
+		});
+		ServerLifecycleEvents.SERVER_STARTED.register(server ->
+		{
+			// worlds and their scoreboards are loaded here, before the first tick
+			scoreboardManager().reconcile();
+			LOGGER.info("{} scoreboard objectives reconciled", MOD_NAME);
+		});
+		ServerLifecycleEvents.SERVER_STOPPED.register(server ->
+		{
+			scoreboardManager = null;
+		});
 	}
 }
