@@ -55,7 +55,7 @@ dependencies {
 //	autoRuntimeOnly "me.fallenbreath:mixin-auditor:0.2.0-${unobfuscated ? 'u' : 'o'}"
 
 	// dependencies
-	def fabricApiModules = ['fabric-api-base', 'fabric-lifecycle-events-v1', 'fabric-events-interaction-v0', 'fabric-entity-events-v1']
+	def fabricApiModules = ['fabric-api-base', 'fabric-lifecycle-events-v1', 'fabric-events-interaction-v0', 'fabric-entity-events-v1', 'fabric-command-api-v2']
 	fabricApiModules.forEach {
 		include(autoImplementation(fabricApi.module(it, project.fabric_api_version)))
 	}
