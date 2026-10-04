@@ -20,7 +20,6 @@
 
 package top.sctserver.scoreboard_next.tracker;
 
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -29,13 +28,8 @@ import top.sctserver.scoreboard_next.ScoreboardNext;
 import top.sctserver.scoreboard_next.objective.ObjectiveDefinition;
 import top.sctserver.scoreboard_next.objective.ScoreboardManager;
 
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
 
 public abstract class StatBoardTracker
 {
@@ -43,7 +37,6 @@ public abstract class StatBoardTracker
 	private final Stat<?> stat;
 	private final int divisor;
 	private final int intervalTicks;
-	private final Map<UUID, Long> baselines = new HashMap<>();
 	private int countdown;
 
 	protected StatBoardTracker(ObjectiveDefinition board, Stat<?> stat, int divisor, int intervalTicks)
@@ -65,7 +58,6 @@ public abstract class StatBoardTracker
 	public final void attach()
 	{
 		ServerTickEvents.END_SERVER_TICK.register(this::tick);
-		ServerLifecycleEvents.SERVER_STOPPED.register(server -> baselines.clear());
 	}
 
 	private void tick(MinecraftServer server)
@@ -77,19 +69,10 @@ public abstract class StatBoardTracker
 		countdown = 0;
 
 		List<ServerPlayer> players = server.getPlayerList().getPlayers();
-		Set<UUID> online = new HashSet<>();
 		for (ServerPlayer player : players)
 		{
-			online.add(player.getUUID());
-			poll(player);
+			topUp(player, statValue(player));
 		}
-		baselines.keySet().retainAll(online);
-	}
-
-	private void poll(ServerPlayer player)
-	{
-		long baseline = baselines.computeIfAbsent(player.getUUID(), uuid -> statValue(player));
-		topUp(player, statValue(player) - baseline);
 	}
 
 	private long statValue(ServerPlayer player)
@@ -97,9 +80,9 @@ public abstract class StatBoardTracker
 		return player.getStats().getValue(stat);
 	}
 
-	private void topUp(ServerPlayer player, long gained)
+	private void topUp(ServerPlayer player, long total)
 	{
-		long earned = gained / divisor;
+		long earned = total / divisor;
 		if (earned <= 0)
 		{
 			return;
