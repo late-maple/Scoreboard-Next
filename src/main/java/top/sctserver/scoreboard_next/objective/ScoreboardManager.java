@@ -20,13 +20,12 @@
 
 package top.sctserver.scoreboard_next.objective;
 
-import com.mojang.logging.LogUtils;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.ReadOnlyScoreInfo;
 import net.minecraft.world.scores.Scoreboard;
 import net.minecraft.world.scores.ScoreHolder;
-import org.slf4j.Logger;
+import top.sctserver.scoreboard_next.ScoreboardNext;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -36,15 +35,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Consumer;
 
 public final class ScoreboardManager
 {
-	private static final Logger LOGGER = LogUtils.getLogger();
-
 	private final MinecraftServer server;
 	private final Map<String, ObjectiveDefinition> definitions = new LinkedHashMap<>();
 	private final Set<String> loggedCriteriaMismatches = new HashSet<>();
 	private boolean loggedEmptyReconcile;
+	private Consumer<ObjectiveDefinition> objectiveCreatedCallback = definition ->
+	{
+	};
 
 	public ScoreboardManager(MinecraftServer server)
 	{
@@ -67,6 +68,11 @@ public final class ScoreboardManager
 		return List.copyOf(definitions.values());
 	}
 
+	public void setObjectiveCreatedCallback(Consumer<ObjectiveDefinition> callback)
+	{
+		this.objectiveCreatedCallback = Objects.requireNonNull(callback, "callback must not be null");
+	}
+
 	public void reconcile()
 	{
 		Scoreboard scoreboard = server.getScoreboard();
@@ -75,7 +81,7 @@ public final class ScoreboardManager
 			if (!loggedEmptyReconcile)
 			{
 				loggedEmptyReconcile = true;
-				LOGGER.warn("reconcile() called with no registered definitions; nothing to do");
+				ScoreboardNext.LOGGER.warn("reconcile() called with no registered definitions; nothing to do");
 			}
 			return;
 		}
@@ -91,7 +97,7 @@ public final class ScoreboardManager
 			{
 				if (!current.getCriteria().equals(definition.criteria()) && loggedCriteriaMismatches.add(definition.key()))
 				{
-					LOGGER.warn(
+					ScoreboardNext.LOGGER.warn(
 							"Objective '{}' has criteria '{}' but definition '{}' expects '{}'; leaving it untouched",
 							definition.objectiveName(),
 							current.getCriteria().getName(),
@@ -146,6 +152,22 @@ public final class ScoreboardManager
 		return info == null ? 0 : info.value();
 	}
 
+	public Objective ensureObjective(String key)
+	{
+		ObjectiveDefinition definition = definitions.get(Objects.requireNonNull(key, "key must not be null"));
+		if (definition == null)
+		{
+			throw new IllegalArgumentException("Unknown objective key '" + key + "'");
+		}
+		Scoreboard scoreboard = server.getScoreboard();
+		Objective objective = scoreboard.getObjective(definition.objectiveName());
+		if (objective == null)
+		{
+			objective = createObjective(scoreboard, definition);
+		}
+		return objective;
+	}
+
 	private static Map<String, Objective> managedObjectives(Scoreboard scoreboard)
 	{
 		Map<String, Objective> managed = new HashMap<>();
@@ -160,9 +182,9 @@ public final class ScoreboardManager
 		return managed;
 	}
 
-	private static Objective createObjective(Scoreboard scoreboard, ObjectiveDefinition definition)
+	private Objective createObjective(Scoreboard scoreboard, ObjectiveDefinition definition)
 	{
-		return scoreboard.addObjective(
+		Objective objective = scoreboard.addObjective(
 				definition.objectiveName(),
 				definition.criteria(),
 				definition.displayName(),
@@ -170,5 +192,7 @@ public final class ScoreboardManager
 				true,
 				null
 		);
+		this.objectiveCreatedCallback.accept(definition);
+		return objective;
 	}
 }

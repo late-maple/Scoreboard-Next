@@ -24,11 +24,15 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.scores.criteria.ObjectiveCriteria;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 public final class Objectives
 {
 	private static final List<ObjectiveDefinition> ALL = new ArrayList<>();
+	private static final Map<String, ObjectiveDefinition> BY_KEY = new LinkedHashMap<>();
 
 	public static final ObjectiveDefinition DEATHS   = register(new ObjectiveDefinition("deaths", "死亡榜", ObjectiveCriteria.DEATH_COUNT));
 	public static final ObjectiveDefinition TRADE    = register(new ObjectiveDefinition("trade", "交易榜", ObjectiveCriteria.DUMMY));
@@ -47,11 +51,17 @@ public final class Objectives
 	private static ObjectiveDefinition register(ObjectiveDefinition definition)
 	{
 		ALL.add(definition);
+		BY_KEY.put(definition.key(), definition);
 		return definition;
 	}
 
 	public static List<ObjectiveDefinition> all()
 	{
 		return List.copyOf(ALL);
+	}
+
+	public static Optional<ObjectiveDefinition> byKey(String key)
+	{
+		return Optional.ofNullable(BY_KEY.get(key));
 	}
 }

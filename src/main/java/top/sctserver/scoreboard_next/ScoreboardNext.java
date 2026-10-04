@@ -26,8 +26,10 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.metadata.ModMetadata;
 import org.slf4j.Logger;
+import top.sctserver.scoreboard_next.commands.SidebarCommand;
 import top.sctserver.scoreboard_next.objective.Objectives;
 import top.sctserver.scoreboard_next.objective.ScoreboardManager;
+import top.sctserver.scoreboard_next.sidebar.SidebarManager;
 import top.sctserver.scoreboard_next.tracker.Trackers;
 
 public class ScoreboardNext implements ModInitializer
@@ -39,6 +41,7 @@ public class ScoreboardNext implements ModInitializer
 	public static String MOD_NAME = "unknown";
 
 	private static ScoreboardManager scoreboardManager;
+	private static SidebarManager sidebarManager;
 
 
 	public static ScoreboardManager scoreboardManager()
@@ -51,6 +54,21 @@ public class ScoreboardNext implements ModInitializer
 		return manager;
 	}
 
+	public static SidebarManager sidebarManager()
+	{
+		SidebarManager manager = sidebarManager;
+		if (manager == null)
+		{
+			throw new IllegalStateException("SidebarManager is only available while a server is running");
+		}
+		return manager;
+	}
+
+	public static SidebarManager sidebarManagerOrNull()
+	{
+		return sidebarManager;
+	}
+
 	@Override
 	public void onInitialize()
 	{
@@ -60,13 +78,18 @@ public class ScoreboardNext implements ModInitializer
 		LOGGER.info("{} initialized, version {}", MOD_NAME, MOD_VERSION);
 
 		Trackers.registerAll();
+		SidebarCommand.register();
 
 		ServerLifecycleEvents.SERVER_STARTING.register(server ->
 		{
 			ScoreboardManager manager = new ScoreboardManager(server);
 			Objectives.all().forEach(manager::register);
 			scoreboardManager = manager;
+			SidebarManager sidebar = new SidebarManager(server);
+			manager.setObjectiveCreatedCallback(definition -> sidebar.repushSubscribersOf(definition.key()));
+			sidebarManager = sidebar;
 			LOGGER.info("{} manager bound to server ({} objectives registered)", MOD_NAME, Objectives.all().size());
+			LOGGER.info("{} sidebar manager bound to server", MOD_NAME);
 		});
 		ServerLifecycleEvents.SERVER_STARTED.register(server ->
 		{
@@ -77,6 +100,7 @@ public class ScoreboardNext implements ModInitializer
 		ServerLifecycleEvents.SERVER_STOPPED.register(server ->
 		{
 			scoreboardManager = null;
+			sidebarManager = null;
 		});
 	}
 }

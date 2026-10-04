@@ -4,7 +4,9 @@
   "package": "top.sctserver.scoreboard_next.mixins",
   "compatibilityLevel": "{{COMPATIBILITY_LEVEL}}",
   "mixins": [
-    "BlockItemMixin"
+    "BlockItemMixin",
+    "PlayerListMixin",
+    "ServerCommonPacketListenerImplMixin"
   ],
   "client": [
   ],
