@@ -30,6 +30,7 @@ import top.sctserver.scoreboard_next.commands.SidebarCommand;
 import top.sctserver.scoreboard_next.objective.Objectives;
 import top.sctserver.scoreboard_next.objective.ScoreboardManager;
 import top.sctserver.scoreboard_next.sidebar.SidebarManager;
+import top.sctserver.scoreboard_next.tracker.MenuGestureTracker;
 import top.sctserver.scoreboard_next.tracker.Trackers;
 
 public class ScoreboardNext implements ModInitializer
@@ -78,6 +79,7 @@ public class ScoreboardNext implements ModInitializer
 		LOGGER.info("{} initialized, version {}", MOD_NAME, MOD_VERSION);
 
 		Trackers.registerAll();
+		MenuGestureTracker.register();
 		SidebarCommand.register();
 
 		ServerLifecycleEvents.SERVER_STARTING.register(server ->

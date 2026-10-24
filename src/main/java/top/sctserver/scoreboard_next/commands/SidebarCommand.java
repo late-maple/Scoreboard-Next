@@ -35,10 +35,12 @@ import top.sctserver.scoreboard_next.ScoreboardNext;
 import top.sctserver.scoreboard_next.objective.ObjectiveDefinition;
 import top.sctserver.scoreboard_next.objective.Objectives;
 import top.sctserver.scoreboard_next.sidebar.SidebarManager;
+import top.sctserver.scoreboard_next.tracker.MenuGestureStorage;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public final class SidebarCommand
 {
@@ -60,7 +62,9 @@ public final class SidebarCommand
 										})
 										.executes(context -> SidebarCommand.toggle(context.getSource(), StringArgumentType.getString(context, "board"))))
 								.then(Commands.literal("off")
-										.executes(context -> SidebarCommand.off(context.getSource()))))));
+										.executes(context -> SidebarCommand.off(context.getSource()))))
+						.then(Commands.literal("gesture")
+								.executes(context -> SidebarCommand.toggleGesture(context.getSource())))));
 	}
 
 	private static int usage(CommandSourceStack source)
@@ -80,13 +84,19 @@ public final class SidebarCommand
 		{
 			return usage(source);
 		}
+		sendMenu(player);
+		return 1;
+	}
+
+	public static void sendMenu(ServerPlayer player)
+	{
 		Optional<String> current = ScoreboardNext.sidebarManager().subscriptionOf(player);
 
 		MutableComponent message = Component.literal("");
 		message.append(Component.literal("—— 计分板侧边栏订阅 ——").withStyle(ChatFormatting.BOLD));
 		message.append(Component.literal("\n"));
 		message.append(Component.literal("当前订阅："));
-		message.append(Component.literal(current.flatMap(Objectives::byKey).map(definition -> definition.displayName().getString()).orElse("无（跟随全局）")).withStyle(ChatFormatting.YELLOW));
+		message.append(Component.literal(current.flatMap(Objectives::byKey).map(definition -> definition.displayName().getString()).orElse("无(跟随全局)")).withStyle(ChatFormatting.YELLOW));
 		message.append(Component.literal("\n"));
 
 		List<Component> parts = new ArrayList<>();
@@ -107,7 +117,27 @@ public final class SidebarCommand
 		{
 			message.append(part);
 		}
-		source.sendSuccess(() -> message, false);
+		message.append(Component.literal("\n"));
+		message.append(Component.literal("动作打开(抬头蹲起)："));
+		message.append(gestureChip(player.getUUID()));
+		player.sendSystemMessage(message);
+	}
+
+	private static Component gestureChip(UUID uuid)
+	{
+		boolean enabled = MenuGestureStorage.getInstance().isEnabled(uuid);
+		return Component.literal(enabled ? "[已启用]" : "[已关闭]").withStyle(style -> style
+				.withColor(enabled ? ChatFormatting.GREEN : ChatFormatting.RED)
+				.withClickEvent(new ClickEvent.RunCommand("/scoreboardnext gesture"))
+				.withHoverEvent(new HoverEvent.ShowText(Component.literal(enabled ? "点击关闭" : "点击开启"))));
+	}
+
+	private static int toggleGesture(CommandSourceStack source) throws CommandSyntaxException
+	{
+		ServerPlayer player = source.getPlayerOrException();
+		MenuGestureStorage storage = MenuGestureStorage.getInstance();
+		storage.setEnabled(player.getUUID(), !storage.isEnabled(player.getUUID()));
+		sendMenu(player);
 		return 1;
 	}
 
