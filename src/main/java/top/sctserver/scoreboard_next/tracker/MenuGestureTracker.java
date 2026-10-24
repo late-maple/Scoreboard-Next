@@ -24,6 +24,7 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import top.sctserver.scoreboard_next.commands.SidebarCommand;
+import top.sctserver.scoreboard_next.storage.MenuGestureStorage;
 
 import java.util.Collections;
 import java.util.Map;

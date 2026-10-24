@@ -28,6 +28,7 @@ import net.minecraft.world.scores.DisplaySlot;
 import net.minecraft.world.scores.Objective;
 import top.sctserver.scoreboard_next.ScoreboardNext;
 import top.sctserver.scoreboard_next.objective.ObjectiveDefinition;
+import top.sctserver.scoreboard_next.storage.SidebarStorage;
 
 import java.util.HashMap;
 import java.util.HashSet;

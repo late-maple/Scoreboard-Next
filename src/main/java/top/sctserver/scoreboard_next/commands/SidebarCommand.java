@@ -35,7 +35,7 @@ import top.sctserver.scoreboard_next.ScoreboardNext;
 import top.sctserver.scoreboard_next.objective.ObjectiveDefinition;
 import top.sctserver.scoreboard_next.objective.Objectives;
 import top.sctserver.scoreboard_next.sidebar.SidebarManager;
-import top.sctserver.scoreboard_next.tracker.MenuGestureStorage;
+import top.sctserver.scoreboard_next.storage.MenuGestureStorage;
 
 import java.util.ArrayList;
 import java.util.List;

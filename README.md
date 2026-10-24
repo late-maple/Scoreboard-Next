@@ -16,4 +16,7 @@ A next-generation scoreboard mod for Minecraft, built on Fabric.
 
 LGPL-3.0
 
-Based on [Fallen-Breath's fabric-mod-template](https://github.com/Fallen-Breath/fabric-mod-template).
+## Acknowledgements
+
+- Inspired by [FZ Survival Datapack](https://gitee.com/harvey-husky/fz-survival-datapack)
+- Project scaffold based on [Fallen-Breath's fabric-mod-template](https://github.com/Fallen-Breath/fabric-mod-template)
