@@ -25,15 +25,8 @@ import top.sctserver.scoreboard_next.objective.Objectives;
 
 public final class FishCaughtTracker extends StatBoardTracker
 {
-	private static final FishCaughtTracker INSTANCE = new FishCaughtTracker();
-
-	private FishCaughtTracker()
+	FishCaughtTracker()
 	{
 		super(Objectives.FISHING, Stats.CUSTOM.get(Stats.FISH_CAUGHT), 1, 20);
-	}
-
-	public static void register()
-	{
-		INSTANCE.attach();
 	}
 }

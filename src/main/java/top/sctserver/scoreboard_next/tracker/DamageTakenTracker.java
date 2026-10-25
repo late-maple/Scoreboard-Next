@@ -25,15 +25,8 @@ import top.sctserver.scoreboard_next.objective.Objectives;
 
 public final class DamageTakenTracker extends StatBoardTracker
 {
-	private static final DamageTakenTracker INSTANCE = new DamageTakenTracker();
-
-	private DamageTakenTracker()
+	DamageTakenTracker()
 	{
 		super(Objectives.DAMAGE, Stats.CUSTOM.get(Stats.DAMAGE_TAKEN), 10, 20);
-	}
-
-	public static void register()
-	{
-		INSTANCE.attach();
 	}
 }

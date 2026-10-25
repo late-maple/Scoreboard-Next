@@ -26,11 +26,12 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.metadata.ModMetadata;
 import org.slf4j.Logger;
+import top.sctserver.scoreboard_next.commands.RestoreCommand;
 import top.sctserver.scoreboard_next.commands.SidebarCommand;
 import top.sctserver.scoreboard_next.objective.Objectives;
 import top.sctserver.scoreboard_next.objective.ScoreboardManager;
+import top.sctserver.scoreboard_next.sidebar.MenuGestureTracker;
 import top.sctserver.scoreboard_next.sidebar.SidebarManager;
-import top.sctserver.scoreboard_next.tracker.MenuGestureTracker;
 import top.sctserver.scoreboard_next.tracker.Trackers;
 
 public class ScoreboardNext implements ModInitializer
@@ -65,6 +66,11 @@ public class ScoreboardNext implements ModInitializer
 		return manager;
 	}
 
+	public static ScoreboardManager scoreboardManagerOrNull()
+	{
+		return scoreboardManager;
+	}
+
 	public static SidebarManager sidebarManagerOrNull()
 	{
 		return sidebarManager;
@@ -81,6 +87,7 @@ public class ScoreboardNext implements ModInitializer
 		Trackers.registerAll();
 		MenuGestureTracker.register();
 		SidebarCommand.register();
+		RestoreCommand.register();
 
 		ServerLifecycleEvents.SERVER_STARTING.register(server ->
 		{

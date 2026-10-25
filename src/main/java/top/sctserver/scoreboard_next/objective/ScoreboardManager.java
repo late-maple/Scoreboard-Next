@@ -134,6 +134,23 @@ public final class ScoreboardManager
 		scoreboard.getOrCreatePlayerScore(holder, objective).add(amount);
 	}
 
+	public void setScore(String key, ScoreHolder holder, int value)
+	{
+		Objects.requireNonNull(holder, "holder must not be null");
+		ObjectiveDefinition definition = definitions.get(Objects.requireNonNull(key, "key must not be null"));
+		if (definition == null)
+		{
+			throw new IllegalArgumentException("Unknown objective key '" + key + "'");
+		}
+		Scoreboard scoreboard = server.getScoreboard();
+		Objective objective = scoreboard.getObjective(definition.objectiveName());
+		if (objective == null)
+		{
+			objective = createObjective(scoreboard, definition);
+		}
+		scoreboard.getOrCreatePlayerScore(holder, objective).set(value);
+	}
+
 	public int getScore(String key, ScoreHolder holder)
 	{
 		Objects.requireNonNull(holder, "holder must not be null");

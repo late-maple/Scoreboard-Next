@@ -20,8 +20,18 @@
 
 package top.sctserver.scoreboard_next.tracker;
 
+import java.util.List;
+
 public final class Trackers
 {
+	private static final List<StatBoardTracker> STAT_BOARDS = List.of(
+			new OnlineTimeTracker(),
+			new AviatingTracker(),
+			new FishCaughtTracker(),
+			new TradeTracker(),
+			new DamageTakenTracker()
+	);
+
 	private Trackers()
 	{
 	}
@@ -31,10 +41,11 @@ public final class Trackers
 		BlockBreakTracker.register();
 		BlockPlaceTracker.register();
 		KillTracker.register();
-		FishCaughtTracker.register();
-		TradeTracker.register();
-		OnlineTimeTracker.register();
-		AviatingTracker.register();
-		DamageTakenTracker.register();
+		STAT_BOARDS.forEach(StatBoardTracker::attach);
+	}
+
+	public static List<StatBoardTracker> statBoards()
+	{
+		return STAT_BOARDS;
 	}
 }

@@ -25,15 +25,8 @@ import top.sctserver.scoreboard_next.objective.Objectives;
 
 public final class TradeTracker extends StatBoardTracker
 {
-	private static final TradeTracker INSTANCE = new TradeTracker();
-
-	private TradeTracker()
+	TradeTracker()
 	{
 		super(Objectives.TRADE, Stats.CUSTOM.get(Stats.TRADED_WITH_VILLAGER), 1, 20);
-	}
-
-	public static void register()
-	{
-		INSTANCE.attach();
 	}
 }

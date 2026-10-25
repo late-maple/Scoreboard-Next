@@ -21,7 +21,6 @@
 package top.sctserver.scoreboard_next.tracker;
 
 import top.sctserver.scoreboard_next.ScoreboardNext;
-import top.sctserver.scoreboard_next.event.ServerBlockPlaceEvents;
 import top.sctserver.scoreboard_next.objective.Objectives;
 
 public final class BlockPlaceTracker

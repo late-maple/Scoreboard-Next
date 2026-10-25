@@ -18,7 +18,7 @@
  * along with Scoreboard Next.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package top.sctserver.scoreboard_next.event;
+package top.sctserver.scoreboard_next.tracker;
 
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;

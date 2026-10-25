@@ -31,7 +31,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import top.sctserver.scoreboard_next.event.ServerBlockPlaceEvents;
+import top.sctserver.scoreboard_next.tracker.ServerBlockPlaceEvents;
 
 @Mixin(BlockItem.class)
 public abstract class BlockItemMixin

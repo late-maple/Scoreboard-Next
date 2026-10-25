@@ -26,21 +26,16 @@ import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.HoverEvent;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import top.sctserver.scoreboard_next.ScoreboardNext;
 import top.sctserver.scoreboard_next.objective.ObjectiveDefinition;
 import top.sctserver.scoreboard_next.objective.Objectives;
 import top.sctserver.scoreboard_next.sidebar.SidebarManager;
+import top.sctserver.scoreboard_next.sidebar.SidebarMenu;
 import top.sctserver.scoreboard_next.storage.MenuGestureStorage;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 public final class SidebarCommand
 {
@@ -84,52 +79,8 @@ public final class SidebarCommand
 		{
 			return usage(source);
 		}
-		sendMenu(player);
+		SidebarMenu.sendMenu(player);
 		return 1;
-	}
-
-	public static void sendMenu(ServerPlayer player)
-	{
-		Optional<String> current = ScoreboardNext.sidebarManager().subscriptionOf(player);
-
-		MutableComponent message = Component.literal("");
-		message.append(Component.literal("—— 计分板侧边栏订阅 ——").withStyle(ChatFormatting.BOLD));
-		message.append(Component.literal("\n"));
-		message.append(Component.literal("当前订阅："));
-		message.append(Component.literal(current.flatMap(Objectives::byKey).map(definition -> definition.displayName().getString()).orElse("无(跟随全局)")).withStyle(ChatFormatting.YELLOW));
-		message.append(Component.literal("\n"));
-
-		List<Component> parts = new ArrayList<>();
-		for (ObjectiveDefinition definition : Objectives.all())
-		{
-			parts.add(boardChip(definition, current));
-			parts.add(Component.literal(" "));
-		}
-		if (current.isPresent())
-		{
-			parts.add(resetChip());
-		}
-		else
-		{
-			parts.remove(parts.size() - 1);
-		}
-		for (Component part : parts)
-		{
-			message.append(part);
-		}
-		message.append(Component.literal("\n"));
-		message.append(Component.literal("动作打开(抬头蹲起)："));
-		message.append(gestureChip(player.getUUID()));
-		player.sendSystemMessage(message);
-	}
-
-	private static Component gestureChip(UUID uuid)
-	{
-		boolean enabled = MenuGestureStorage.getInstance().isEnabled(uuid);
-		return Component.literal(enabled ? "[已启用]" : "[已关闭]").withStyle(style -> style
-				.withColor(enabled ? ChatFormatting.GREEN : ChatFormatting.RED)
-				.withClickEvent(new ClickEvent.RunCommand("/scoreboardnext gesture"))
-				.withHoverEvent(new HoverEvent.ShowText(Component.literal(enabled ? "点击关闭" : "点击开启"))));
 	}
 
 	private static int toggleGesture(CommandSourceStack source) throws CommandSyntaxException
@@ -137,42 +88,8 @@ public final class SidebarCommand
 		ServerPlayer player = source.getPlayerOrException();
 		MenuGestureStorage storage = MenuGestureStorage.getInstance();
 		storage.setEnabled(player.getUUID(), !storage.isEnabled(player.getUUID()));
-		sendMenu(player);
+		SidebarMenu.sendMenu(player);
 		return 1;
-	}
-
-	private static Component boardChip(ObjectiveDefinition definition, Optional<String> current)
-	{
-		String key = definition.key();
-		String name = definition.displayName().getString();
-		boolean subscribedToThis = current.filter(key::equals).isPresent();
-		String hover;
-		if (subscribedToThis)
-		{
-			hover = "点击取消订阅";
-		}
-		else if (current.isPresent())
-		{
-			hover = "切换为" + name;
-		}
-		else
-		{
-			hover = "订阅" + name;
-		}
-		return Component.literal("[" + name + "]").withStyle(style -> style
-				.withColor(subscribedToThis ? ChatFormatting.AQUA : ChatFormatting.GRAY)
-				.withBold(subscribedToThis)
-				.withUnderlined(subscribedToThis)
-				.withClickEvent(new ClickEvent.RunCommand("/scoreboardnext sidebar " + key))
-				.withHoverEvent(new HoverEvent.ShowText(Component.literal(hover))));
-	}
-
-	private static Component resetChip()
-	{
-		return Component.literal("[恢复默认]").withStyle(style -> style
-				.withColor(ChatFormatting.GRAY)
-				.withClickEvent(new ClickEvent.RunCommand("/scoreboardnext sidebar off"))
-				.withHoverEvent(new HoverEvent.ShowText(Component.literal("恢复为全局设置"))));
 	}
 
 	private static int toggle(CommandSourceStack source, String key) throws CommandSyntaxException

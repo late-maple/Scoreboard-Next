@@ -25,15 +25,8 @@ import top.sctserver.scoreboard_next.objective.Objectives;
 
 public final class OnlineTimeTracker extends StatBoardTracker
 {
-	private static final OnlineTimeTracker INSTANCE = new OnlineTimeTracker();
-
-	private OnlineTimeTracker()
+	OnlineTimeTracker()
 	{
 		super(Objectives.ONLINE, Stats.CUSTOM.get(Stats.PLAY_TIME), 72000, 1200);
-	}
-
-	public static void register()
-	{
-		INSTANCE.attach();
 	}
 }

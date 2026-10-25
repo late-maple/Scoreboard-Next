@@ -18,12 +18,11 @@
  * along with Scoreboard Next.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package top.sctserver.scoreboard_next.tracker;
+package top.sctserver.scoreboard_next.sidebar;
 
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
-import top.sctserver.scoreboard_next.commands.SidebarCommand;
 import top.sctserver.scoreboard_next.storage.MenuGestureStorage;
 
 import java.util.Collections;
@@ -61,7 +60,7 @@ public final class MenuGestureTracker
 					&& !isMenuOnCooldown(this.menuCooldownEnds, player, currentTick))
 			{
 				markMenuCooldown(this.menuCooldownEnds, player, currentTick);
-				SidebarCommand.sendMenu(player);
+				SidebarMenu.sendMenu(player);
 			}
 		}
 	}

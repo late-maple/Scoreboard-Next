@@ -25,15 +25,8 @@ import top.sctserver.scoreboard_next.objective.Objectives;
 
 public final class AviatingTracker extends StatBoardTracker
 {
-	private static final AviatingTracker INSTANCE = new AviatingTracker();
-
-	private AviatingTracker()
+	AviatingTracker()
 	{
 		super(Objectives.AVIATING, Stats.CUSTOM.get(Stats.AVIATE_ONE_CM), 200, 100);
-	}
-
-	public static void register()
-	{
-		INSTANCE.attach();
 	}
 }

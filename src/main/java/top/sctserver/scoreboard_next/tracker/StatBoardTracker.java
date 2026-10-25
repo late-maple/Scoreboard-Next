@@ -60,6 +60,21 @@ public abstract class StatBoardTracker
 		ServerTickEvents.END_SERVER_TICK.register(this::tick);
 	}
 
+	public ObjectiveDefinition board()
+	{
+		return this.board;
+	}
+
+	public Stat<?> stat()
+	{
+		return this.stat;
+	}
+
+	public int divisor()
+	{
+		return this.divisor;
+	}
+
 	private void tick(MinecraftServer server)
 	{
 		if (++countdown < intervalTicks)
